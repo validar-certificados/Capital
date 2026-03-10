@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Validar Certificados – AFP Capital</title>
-  
+
   <link rel="icon" href="https://www.google.com/s2/favicons?domain=afpcapital.cl&sz=128" type="image/png" />
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
@@ -39,6 +39,7 @@
     /* ── HERO SECTION with dots ── */
     .hero-section { position: relative; padding: 64px 48px 64px; display: flex; gap: 80px; align-items: flex-start; overflow: hidden; min-height: 420px; }
 
+    /* Dot pattern background */
     .hero-section::before {
       content: '';
       position: absolute;
@@ -80,8 +81,6 @@
     .result-box { display: none; margin-top: 18px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; }
     .result-box.visible { display: block; }
     .result-header { padding: 11px 16px; font-weight: 600; font-size: 0.88rem; display: flex; align-items: center; gap: 8px; }
-    .result-header.success { background: #e8f5e9; color: #2e7d32; border-bottom: 2px solid #2e7d32; }
-    .result-header.error { background: #ffebee; color: #c62828; border-bottom: 2px solid #c62828; }
     .result-body { padding: 16px; background: #fff; font-size: 0.88rem; }
     .result-body .name { font-weight: 700; margin-bottom: 12px; font-size: 0.95rem; }
 
@@ -331,20 +330,24 @@
       const box = document.getElementById('result-box');
       const hdr = document.getElementById('result-header');
       const bdy = document.getElementById('result-body');
+      
       if (data.found === true && data.pdf) {
-        hdr.className = 'result-header success';
-        hdr.innerHTML = '<svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#2e7d32"/><path d="M8 12l3 3 5-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Certificado válido';
+        hdr.className = 'result-header';
+        hdr.style.cssText = 'background: #f4f9ff; color: #1a5fb4; border-bottom: 3px solid #c8e63a;';
+        hdr.innerHTML = `<strong>✓ Certificado Validado Exitosamente</strong>`;
         const pdfData = data.pdf.startsWith('data:') ? data.pdf : 'data:application/pdf;base64,' + data.pdf;
-        bdy.innerHTML = '<div class="name">' + (data.name || 'Certificado encontrado') + '</div>' +
-          '<div style="margin-top:12px;border:1px solid #ddd;border-radius:4px;overflow:hidden;">' +
-          '<iframe src="' + pdfData + '" style="width:100%;height:500px;border:none;" title="Certificado PDF"></iframe></div>';
+        bdy.innerHTML = `<div class="name">${data.name || 'Certificado encontrado'}</div>` +
+          `<div style="margin-top:12px;border:1px solid #ddd;border-radius:4px;overflow:hidden;">` +
+          `<iframe src="${pdfData}" style="width:100%;height:500px;border:none;" title="Certificado PDF"></iframe></div>`;
       } else if (data.found === false) {
-        hdr.className = 'result-header error';
-        hdr.innerHTML = '<svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#c62828"/><path d="M15 9l-6 6M9 9l6 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg> Certificado no encontrado';
-        bdy.innerHTML = '<p style="color:#555;font-size:0.9rem;">No se encontró ningún certificado con los datos ingresados.</p>';
+        hdr.className = 'result-header';
+        hdr.style.cssText = 'background: #fff5f5; color: #d32f2f; border-bottom: 3px solid #d32f2f;';
+        hdr.innerHTML = `<strong>✕ No se encontraron resultados</strong>`;
+        bdy.innerHTML = '<p style="color:#555;font-size:0.9rem;">El folio ingresado no corresponde a un certificado emitido por AFP Capital.</p>';
       } else {
-        hdr.className = 'result-header error';
-        hdr.innerHTML = '⚠️ Respuesta inesperada del servidor.';
+        hdr.className = 'result-header';
+        hdr.style.cssText = 'background: #fff5f5; color: #d32f2f; border-bottom: 3px solid #d32f2f;';
+        hdr.innerHTML = '<strong>⚠️ Respuesta inesperada del servidor</strong>';
         bdy.innerHTML = '<p style="color:#555;font-size:0.9rem;">Intenta nuevamente en unos minutos.</p>';
       }
       box.classList.add('visible');
@@ -354,14 +357,10 @@
       const box = document.getElementById('result-box');
       const hdr = document.getElementById('result-header');
       const bdy = document.getElementById('result-body');
-      hdr.className = 'result-header error';
-      if (err.name === 'AbortError') {
-        hdr.innerHTML = '⚠️ Tiempo de espera agotado.';
-        bdy.innerHTML = '<p style="color:#555;font-size:0.9rem;">El servidor tardó demasiado. Intenta nuevamente.</p>';
-      } else {
-        hdr.innerHTML = '⚠️ No se pudo conectar con el servidor.';
-        bdy.innerHTML = '<p style="color:#555;font-size:0.9rem;">Verifica tu conexión e intenta nuevamente.</p>';
-      }
+      hdr.className = 'result-header';
+      hdr.style.cssText = 'background: #fff5f5; color: #d32f2f; border-bottom: 3px solid #d32f2f;';
+      hdr.innerHTML = '<strong>⚠️ Error de conexión</strong>';
+      bdy.innerHTML = '<p style="color:#555;font-size:0.9rem;">Verifica tu conexión e intenta nuevamente.</p>';
       box.classList.add('visible');
     } finally {
       btn.disabled = false;
